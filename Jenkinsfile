@@ -1,9 +1,11 @@
 pipeline {
     agent any
-tools {
-  maven 'M2_HOME'
-  jfrog 'Jfrog remote cli'
-  }
+    tools {
+        maven 'M2_HOME'
+        // Specifying JFrog CLI tool
+        jfrog 'Jfrog remote cli'
+    }
+
     stages {
         stage('maven clean') {
             steps {
@@ -30,28 +32,28 @@ tools {
                 sh 'mvn package'
             }
         }
+        // New Testing stage to use JFrog CLI
         stage('Testing') {
-	    steps {
-	        // Show the installed version of JFrog CLI.
-	        jf '-v'
+            steps {
+                // Show the installed version of JFrog CLI
+                jf '-v'
 
-	        // Show the configured JFrog Platform instances.
-	        jf 'c show'
+                // Show the configured JFrog Platform instances
+                jf 'c show'
 
-	        // Ping Artifactory.
-	        jf 'rt ping'
+                // Ping Artifactory
+                jf 'rt ping'
 
-	        // Create a file and upload it to a repository named 'my-test-repo' in Artifactory
-	        sh 'touch test-file'
-	        jf 'rt u test-file my-test-repo/'
+                // Create a file and upload it to the 'geoapp' repository in Artifactory
+                sh 'touch test-file'
+                jf 'rt u test-file geoapp/'
 
-	        // Publish the build-info to Artifactory.
-	        jf 'rt bp'
+                // Publish the build-info to Artifactory
+                jf 'rt bp'
 
-	        // Download the test-file
-	        jf 'rt dl my-test-repo/test-file'
-	    }
-	}
-       
+                // Download the test-file from the 'geoapp' repository
+                jf 'rt dl geoapp/test-file'
+            }
+        }
     }
 }
